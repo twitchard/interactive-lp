@@ -120,23 +120,23 @@ in
 end
 
 
-  fun stepToLogLine {rule, consts, input, input_deps, outputs} =
-  let
-    (* Transition *)
-    val constStrings = map Ceptre.termToString consts
-    val constsString = String.concatWith " " constStrings
-    val transition = rule^" "^constsString
-    (* Removed predicates *)
-    val removed = map (Ceptre.atomToString o (#2)) input_deps
-    val removedString = "{"^ (String.concatWith ", " removed) ^"}"
-    (* Added predicates *)
-    val added = map (Ceptre.atomToString o (#2)) outputs
-    val addedString = "{"^(String.concatWith ", " added)^"}"
-  in
-    "--- STEP:    "^transition^"\n"^
-    "    REMOVED: "^ removedString  ^"\n"^
-    "    ADDED:   "^ addedString ^"\n"
-  end
+  (*fun stepToLogLine {rule, consts, input, input_deps, outputs} = *)
+  (*let *)
+  (*  (* Transition *) *)
+  (*  val constStrings = map Ceptre.termToString consts *)
+  (*  val constsString = String.concatWith " " constStrings *)
+  (*  val transition = rule^" "^constsString *)
+  (*  (* Removed predicates *) *)
+  (*  val removed = map (Ceptre.atomToString o (#2)) input_deps *)
+  (*  val removedString = "{"^ (String.concatWith ", " removed) ^"}" *)
+  (*  (* Added predicates *) *)
+  (*  val added = map (Ceptre.atomToString o (#2)) outputs *)
+  (*  val addedString = "{"^(String.concatWith ", " added)^"}" *)
+  (*in *)
+  (*  "--- STEP:    "^transition^"\n"^ *)
+  (*  "    REMOVED: "^ removedString  ^"\n"^ *)
+  (*  "    ADDED:   "^ addedString ^"\n" *)
+  (*end *)
 
 
   (* Create a string from l by comma-separating f of each element, then 
@@ -195,34 +195,29 @@ end
     val added   = listToString outputs bindingToJSON "[" "]"
     val context = contextToJSON ctx
   in
-    "{\"command\": "^command^",\n"^
-    " \"removed\": "^removed^",\n"^
-    " \"added\": "^added^",\n"^
-    " \"context\": "^context^"\n}"
+    "{ \"event\": \"rule\", \"content\": "^
+      "{ \"command\": "^command^", "^
+      "  \"removed\": "^removed^", "^
+      "  \"added\": "^added^", "^
+      "  \"context\": "^context^" }}\n"
   end
 
 fun run (sigma : Ceptre.sigma) (program as {init_state,...} : Ceptre.program)
   : CoreEngine.fastctx * Ceptre.context * Traces.trace  =
 let
   (* val senses = XXX (* set up sensors *) *)
-  val logfile = TextIO.openOut "log.txt"
   fun log step ctx = 
     let
       (* Log file *)
-      val step_string = stepToLogLine step
-      val () = TextIO.output (logfile, step_string)
-      val () = TextIO.flushOut logfile
+      val () = print (stepToJSONLine step ctx)
+      (* val step_string = stepToLogLine step *)
       (* JSON file *)
       val jsonfile = TextIO.openOut "ceptre.json"
       val step_json = stepToJSONLine step ctx
-      val () = TextIO.output (jsonfile, step_json)
-      val () = TextIO.flushOut jsonfile
-      val () = TextIO.closeOut jsonfile
+      val () = print step_json
     in () end
 in
   fwdchain sigma init_state program (* senses *) log
-  before
-  TextIO.closeOut logfile
 end
 
 end

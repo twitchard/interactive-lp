@@ -15,7 +15,7 @@ struct
               case decl of 
                  Signature.TypeDecl a => StringRedBlackSet.insert types a
                | _ => types 
-           val () = print (Signature.topdeclToString decl^"\n")
+           (*val () = print (Signature.topdeclToString decl^"\n") *)
         in loop types (Signature.add signat decl) tops end
     val () = loop StringRedBlackSet.empty [] parsed 
 

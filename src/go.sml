@@ -1,4 +1,4 @@
-val () = print ("Ceptre!\n")
+val () = print ("{\"event\": \"Ceptre!\"\n")
 
 val () = 
    case CommandLine.arguments () of

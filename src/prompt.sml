@@ -2,13 +2,14 @@ signature PROMPT =
 sig
   val prompt : CoreEngine.transition list -> CoreEngine.fastctx 
     -> CoreEngine.transition option
+
 end
 
 structure PromptUtil = 
 struct
 
   val prompt_char = "?-"
-  val error = "\nInvalid index! Try again.\n"^prompt_char^" "
+  val error = "{\"event\": \"error\", \"message\": \"Invalid index! Try again.\"}\n"
 
   (* Pair elements of a list with their number in that list. *)
   fun number' (x::xs) i = (i,x)::(number' xs (i+1))
@@ -16,11 +17,11 @@ struct
 
   fun number xs = number' xs 0
   
-  fun numberStrings xs = 
+  fun numberChoices xs = 
     let
       val numbered = number xs
     in
-      map (fn (i,x) => (Int.toString i)^": "^x) numbered
+      map (fn (i,x) => "{ \"n\": "^(Int.toString i)^", \"choice\": "^x^"}") numbered
     end
 
   fun acceptInput Ts =
@@ -36,12 +37,16 @@ struct
                     (print error; acceptInput Ts (* try again *) )
           )
 
+  fun vectorToList v = 
+     List.tabulate (Vector.length v, fn i => valOf (Vector.sub (v, i)))
+
   fun transitionsToString Ts =
   let
-    val choices = "(quiesce)" :: (map CoreEngine.transitionToString Ts)
-    val numbered = numberStrings choices
+    val choices = "null" :: (map CoreEngine.transitionToJSON Ts)
+    val numbered = numberChoices choices
   in
-    "\n" ^ (String.concatWith "\n" numbered) ^ "\n" ^ prompt_char ^ " "
+    "{ \"event\": \"choices\", \"content\": [" ^ (String.concatWith ","
+    numbered) ^ "]}\n"
   end
 
   (* Context utilities *)

@@ -15,6 +15,7 @@ sig
     | Unit
 
    val transitionToString: transition -> string
+   val transitionToJSON: transition -> string
    val varToString: ctx_var -> string
    val valueToString: value -> string
 
@@ -125,6 +126,15 @@ fun valueToString v =
 
 fun transitionToString {r = (r, _), tms, Vs} =
    Ceptre.withArgs r (map Ceptre.termToString (vectorToList tms))
+
+fun transitionToJSON {r = (r, _), tms, Vs} =
+  let 
+    val quoteAround = fn s => "\"" ^ s ^ "\""
+    val termList = map (quoteAround o Ceptre.termToString) (vectorToList tms)
+  in
+  "{\"rule\": \"" ^ r ^ "\", \"terms\": " ^
+  "[" ^ (String.concatWith "," termList) ^ "]}"
+  end
 
 local
    val i = ref 0
