@@ -241,9 +241,9 @@ fun eol stream =
 
 in
 
-fun parsefile s =
+
+fun parsestream textstream s =
 let
-   val textstream = TextIO.openIn s
    val str = Stream.fromTextInstream textstream
    val str = coordinate eol (Coord.init s) str
    val str = Stream.eager (Lexer.lexmain str)
@@ -270,6 +270,20 @@ let
 in 
    tops
    before TextIO.closeIn textstream
+end
+
+fun parsestdin _ =
+let
+  val textstream = TextIO.stdIn
+in
+  parsestream textstream "stdin"
+end
+
+fun parsefile s =
+let
+   val textstream = TextIO.openIn s
+in
+  parsestream textstream s
 end
 
 end

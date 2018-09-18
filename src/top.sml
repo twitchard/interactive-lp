@@ -3,7 +3,10 @@ struct
 
   fun progs fname =
   let
-    val parsed = Parse.parsefile fname
+    val parsed =
+      if fname <> "-"
+      then Parse.parsefile fname
+      else Parse.parsestdin ()
 
     (* Modified loader to test type checker *)
     fun loop types signat [] = ()
