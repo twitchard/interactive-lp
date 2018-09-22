@@ -31,6 +31,18 @@ fun stepToString ({rule,consts,input,outputs,...} : step) =
     "let "^patternString^" = "^inputString^";"
   end
 
+fun stepToString ({rule,consts,input,outputs,...} : step) =
+  let
+    val outputStrings = map (CoreEngine.varToString o (#1)) outputs
+    val outputsString = String.concatWith ", " outputStrings
+    val patternString = "["^outputsString^"]"
+    val constStrings : string list = map Ceptre.termToString consts
+    val constsString : string = String.concatWith " " constStrings
+    val inputString = rule^" "^constsString^" "^(CoreEngine.valueToString input)
+  in
+    "let "^patternString^" = "^inputString^";"
+  end
+
 val name = ref 0
 fun gensym () =
 let

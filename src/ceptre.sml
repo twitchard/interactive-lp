@@ -51,9 +51,14 @@ structure Ceptre = struct
 
   fun varToString v = Int.toString v
 
-  fun withArgs p [] = p
+  fun quoteAround x = "\"" ^ x ^ "\""
+  fun withArgs p [] = quoteAround p
     | withArgs p args =
-            "(" ^ p ^ " " ^ (String.concatWith " " args) ^ ")"
+        let
+          val a = "[" ^ (String.concatWith "," args) ^ "]"
+        in
+          "{\"predicate\": \""^ p ^ "\", \"args\": " ^ a ^ "}"
+        end
 
   fun termToString (Fn (p, args)) = withArgs p (map termToString args)
     | termToString (Var i) = "(Var "^(varToString i)^")"
@@ -89,7 +94,7 @@ structure Ceptre = struct
 
 
   fun contextToString x = 
-    "{" ^ (String.concatWith ", " (map atomToString x)) ^ "}"
+    "[" ^ (String.concatWith ", " (map atomToString x)) ^ "]"
 
   fun ruleToString {name, pivars, lhs, rhs} =
     let

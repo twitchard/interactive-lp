@@ -45,8 +45,7 @@ struct
     val choices = "null" :: (map CoreEngine.transitionToJSON Ts)
     val numbered = numberChoices choices
   in
-    "{ \"event\": \"choices\", \"content\": [" ^ (String.concatWith ","
-    numbered) ^ "]}\n"
+    "[" ^ (String.concatWith "," numbered) ^ "]"
   end
 
   (* Context utilities *)
@@ -163,8 +162,7 @@ struct
     (* transitions *)
     val promptString = PromptUtil.transitionsToString Ts
     (* printing *)
-    val () = print ctx_string
-    val () = print promptString
+    val () = print ("{\"event\": \"prompt\", \"context\": " ^ ctx_string ^ ", \"transitions\": " ^ promptString ^ "}\n")
   in
     PromptUtil.acceptInput Ts
   end

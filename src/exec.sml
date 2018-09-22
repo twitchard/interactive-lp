@@ -159,7 +159,7 @@ end
     val predString = quote pred
     val modeString' = (case mode of Ceptre.Lin => "lin" | Ceptre.Pers => "pers")
     val modeString = quote modeString'
-    val argString = listToString terms (quote o Ceptre.termToString) "[" "]"
+    val argString = listToString terms (Ceptre.termToString) "[" "]"
   in
     "{\"varname\": "^ varString ^", "^
     "\"mode\": "^ modeString ^", "^
@@ -169,14 +169,14 @@ end
   fun ruleAppToJSON rule args =
   let
     val rfield = (quote "rulename") ^ ": " ^ (quote rule)
-    val argstring = listToString args (quote o Ceptre.termToString) "[" "]"
+    val argstring = listToString args (Ceptre.termToString) "[" "]"
     val argfield = (quote "args") ^ ": " ^ argstring
   in
     "{"^ rfield ^ ", " ^ argfield ^ "}"
   end
 
   fun contextToJSON ctx =
-    listToString ctx (quote o Ceptre.atomToString) "[" "]"
+    listToString ctx (Ceptre.atomToString) "[" "]"
 
   (* XXX Move to traces.sml *)
   (* Format:
@@ -222,5 +222,5 @@ end
 
 end
 
-structure Exec = ExecFn (TextPrompt)
+structure Exec = ExecFn (ShowCtxPrompt)
 

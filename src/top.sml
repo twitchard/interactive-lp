@@ -54,10 +54,7 @@ struct
        val trace_strings = map Traces.stepToString trace
        val trace_string = String.concatWith "\n" trace_strings
        val result_string = 
-         "\n\nFinal state:\n" 
-        ^ ctx_string ^ "\n" ^
-        "\nTrace: \n"
-        ^ trace_string ^ "\n"
+         "{\"event\": \"end\", \"context\": " ^ ctx_string ^ "}\n"
      in
        print result_string
        ; SOME end_ctx (* XXX also trace? *)

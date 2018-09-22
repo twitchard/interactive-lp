@@ -130,7 +130,7 @@ fun transitionToString {r = (r, _), tms, Vs} =
 fun transitionToJSON {r = (r, _), tms, Vs} =
   let 
     val quoteAround = fn s => "\"" ^ s ^ "\""
-    val termList = map (quoteAround o Ceptre.termToString) (vectorToList tms)
+    val termList = map (Ceptre.termToString) (vectorToList tms)
   in
   "{\"rule\": \"" ^ r ^ "\", \"terms\": " ^
   "[" ^ (String.concatWith "," termList) ^ "]}"
